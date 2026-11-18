@@ -269,9 +269,9 @@
     <div class="gallery-controls">
       <div class="gallery-nav">
         <button type="button" id="galleryPrev" disabled>← PREVIOUS</button>
-        <button type="button" id="galleryNext">NEXT →</button>
+        <button type="button" id="galleryNext" disabled>NEXT →</button>
       </div>
-      <div class="gallery-counter" id="galleryCounter">COLLECTION 01</div>
+      <div class="gallery-counter" id="galleryCounter">LOADING COLLECTION...</div>
     </div>
     <p class="gallery-hint">
       Tip: Tap or click the gallery image to open the full-size version, or select a thumbnail below.
@@ -295,17 +295,16 @@
 
   <script>
     /*
-      BULK GALLERY SETTINGS
-      Add the next PNG filename to this list whenever you upload a new page.
-      Example: "jersey-04.png"
+      AUTO-DETECT BULK GALLERY SETTINGS
+      Cukup upload file dengan nama berurutan: jersey-01.png, jersey-02.png, dst.
+      ke dalam folder "gallery/" tanpa perlu mengedit file index.html ini lagi.
     */
-    const galleryFiles = [
-      "jersey-01.png",
-      "jersey-02.png",
-      "jersey-03.png"
-    ];
-
     const galleryFolder = "gallery/";
+    const filePrefix = "jersey-";
+    const fileExtension = ".png";
+    const maxScanFiles = 100; // Batas maksimal pengecekan otomatis (01 s/d 100)
+
+    let availableFiles = [];
     let currentGallery = 0;
 
     const galleryImage = document.getElementById("galleryImage");
@@ -317,10 +316,37 @@
     const galleryFrame = document.getElementById("jerseyGallery");
     const galleryThumbs = document.getElementById("galleryThumbs");
 
-    // Generate thumbnails automatically from galleryFiles
+    // Cek keberadaan setiap file secara berurutan (01, 02, 03...)
+    function checkImageExists(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
+    async function initAutoGallery() {
+      availableFiles = [];
+      for (let i = 1; i <= maxScanFiles; i++) {
+        const fileName = filePrefix + String(i).padStart(2, "0") + fileExtension;
+        const exists = await checkImageExists(galleryFolder + fileName);
+        if (exists) {
+          availableFiles.push(fileName);
+        } else {
+          // Berhenti mencari jika nomor urut berikutnya belum diupload
+          break;
+        }
+      }
+
+      renderThumbnails();
+      showGallery(0);
+    }
+
+    // Generate thumbnail hanya untuk file yang benar-benar ada
     function renderThumbnails() {
       galleryThumbs.innerHTML = "";
-      galleryFiles.forEach((file, index) => {
+      availableFiles.forEach((file, index) => {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "thumb-btn";
@@ -330,6 +356,11 @@
         img.src = galleryFolder + file;
         img.alt = "Thumbnail " + (index + 1);
         img.loading = "lazy";
+
+        // Cadangan pengaman: sembunyikan tombol thumbnail jika gagal dimuat
+        img.onerror = function () {
+          btn.style.display = "none";
+        };
 
         const label = document.createElement("span");
         label.className = "thumb-label";
@@ -344,7 +375,7 @@
     }
 
     function showGallery(index) {
-      if (!galleryFiles.length) {
+      if (!availableFiles.length) {
         galleryFrame.hidden = true;
         galleryThumbs.hidden = true;
         galleryEmpty.hidden = false;
@@ -354,8 +385,12 @@
         return;
       }
 
-      currentGallery = Math.max(0, Math.min(index, galleryFiles.length - 1));
-      const imagePath = galleryFolder + galleryFiles[currentGallery];
+      galleryFrame.hidden = false;
+      galleryThumbs.hidden = false;
+      galleryEmpty.hidden = true;
+
+      currentGallery = Math.max(0, Math.min(index, availableFiles.length - 1));
+      const imagePath = galleryFolder + availableFiles[currentGallery];
 
       galleryImage.src = imagePath;
       galleryImage.alt = "YAP Design jersey gallery, collection " + (currentGallery + 1);
@@ -363,12 +398,11 @@
 
       galleryCounter.textContent =
         "COLLECTION " + String(currentGallery + 1).padStart(2, "0") +
-        " / " + String(galleryFiles.length).padStart(2, "0");
+        " / " + String(availableFiles.length).padStart(2, "0");
 
       galleryPrev.disabled = currentGallery === 0;
-      galleryNext.disabled = currentGallery === galleryFiles.length - 1;
+      galleryNext.disabled = currentGallery === availableFiles.length - 1;
 
-      // Highlight active thumbnail & auto-scroll into view
       const thumbButtons = galleryThumbs.querySelectorAll(".thumb-btn");
       thumbButtons.forEach((btn, idx) => {
         if (idx === currentGallery) {
@@ -378,17 +412,6 @@
           btn.classList.remove("active");
         }
       });
-
-      galleryImage.onerror = function () {
-        galleryFrame.hidden = true;
-        galleryThumbs.hidden = true;
-        galleryEmpty.hidden = false;
-      };
-      galleryImage.onload = function () {
-        galleryFrame.hidden = false;
-        galleryThumbs.hidden = false;
-        galleryEmpty.hidden = true;
-      };
     }
 
     galleryPrev.addEventListener("click", function () {
@@ -424,8 +447,7 @@
       }
     }, { passive: true });
 
-    renderThumbnails();
-    showGallery(0);
+    initAutoGallery();
   </script>
 
 </body>
