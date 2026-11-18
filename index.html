@@ -60,6 +60,104 @@
       font-size: 12px;
       color: #888;
     }
+
+    /* Bulk jersey gallery */
+    .collection-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .collection-heading h2 {
+      font-size: clamp(30px, 5vw, 48px);
+      letter-spacing: -1.5px;
+      margin: 14px 0 8px;
+    }
+    .collection-heading p {
+      color: #777;
+      line-height: 1.7;
+      margin: 0;
+    }
+    .gallery-frame {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      padding: 12px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.04);
+    }
+    .gallery-image-link {
+      display: block;
+      cursor: zoom-in;
+      line-height: 0;
+    }
+    .gallery-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+    }
+    .gallery-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .gallery-nav {
+      display: flex;
+      gap: 10px;
+    }
+    .gallery-nav button {
+      border: 1px solid #171717;
+      background: #171717;
+      color: #fff;
+      padding: 13px 19px;
+      font-size: 12px;
+      letter-spacing: .5px;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .gallery-nav button:hover:not(:disabled) {
+      background: #444;
+    }
+    .gallery-nav button:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+    }
+    .gallery-counter {
+      color: #777;
+      font-size: 12px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+    .gallery-hint {
+      color: #999;
+      font-size: 11px;
+      line-height: 1.6;
+      margin-top: 14px;
+    }
+    .gallery-empty {
+      padding: 55px 20px;
+      background: #fff;
+      border: 1px dashed #ccc;
+      text-align: center;
+      color: #777;
+      line-height: 1.8;
+    }
+    @media (max-width: 600px) {
+      header { padding: 20px 5%; }
+      nav a { margin-left: 12px; font-size: 10px; }
+      main { padding: 75px 6% 55px; }
+      h1 { letter-spacing: -3px; }
+      section { padding: 42px 6%; }
+      .gallery-frame { padding: 5px; }
+      .gallery-controls { align-items: stretch; flex-direction: column; }
+      .gallery-nav { width: 100%; }
+      .gallery-nav button { flex: 1; padding: 14px 10px; }
+      .gallery-counter { text-align: center; order: -1; }
+    }
   </style>
 </head>
 <body>
@@ -84,9 +182,45 @@
   </main>
 
   <section id="collection">
-    <div class="tag">THE COLLECTION</div>
-    <h2>Designs coming soon.</h2>
-    <p>Our creative archive is currently being prepared.</p>
+    <div class="collection-heading">
+      <div>
+        <div class="tag">THE COLLECTION</div>
+        <h2>JERSEY GALLERY.</h2>
+        <p>Explore the collection. Each page features 20 jersey designs.</p>
+      </div>
+    </div>
+
+    <div class="gallery-frame" id="jerseyGallery">
+      <a class="gallery-image-link"
+         id="galleryImageLink"
+         href="gallery/jersey-01.png"
+         target="_blank"
+         rel="noopener"
+         aria-label="Open this gallery image in full size">
+        <img
+          class="gallery-image"
+          id="galleryImage"
+          src="gallery/jersey-01.png"
+          alt="YAP Design jersey gallery, collection 1"
+          loading="lazy">
+      </a>
+    </div>
+
+    <div class="gallery-controls">
+      <div class="gallery-nav">
+        <button type="button" id="galleryPrev" disabled>← PREVIOUS</button>
+        <button type="button" id="galleryNext">NEXT →</button>
+      </div>
+      <div class="gallery-counter" id="galleryCounter">COLLECTION 01</div>
+    </div>
+    <p class="gallery-hint">
+      Tip: Tap or click the gallery image to open the full-size version.
+    </p>
+    <div class="gallery-empty" id="galleryEmpty" hidden>
+      No gallery image found yet. Upload your PNG files to the
+      <strong>gallery</strong> folder using the names
+      <strong>jersey-01.png</strong>, <strong>jersey-02.png</strong>, and so on.
+    </div>
   </section>
 
   <section id="support">
@@ -98,5 +232,100 @@
   <footer>
     © 2026 YAP — YOUR AESTHETIC PLACE
   </footer>
+
+  <script>
+    /*
+      BULK GALLERY SETTINGS
+      Add the next PNG filename to this list whenever you upload a new page.
+      Example: "jersey-04.png"
+    */
+    const galleryFiles = [
+      "jersey-01.png",
+      "jersey-02.png",
+      "jersey-03.png"
+    ];
+
+    const galleryFolder = "gallery/";
+    let currentGallery = 0;
+
+    const galleryImage = document.getElementById("galleryImage");
+    const galleryImageLink = document.getElementById("galleryImageLink");
+    const galleryPrev = document.getElementById("galleryPrev");
+    const galleryNext = document.getElementById("galleryNext");
+    const galleryCounter = document.getElementById("galleryCounter");
+    const galleryEmpty = document.getElementById("galleryEmpty");
+    const galleryFrame = document.getElementById("jerseyGallery");
+
+    function showGallery(index) {
+      if (!galleryFiles.length) {
+        galleryFrame.hidden = true;
+        galleryEmpty.hidden = false;
+        galleryPrev.disabled = true;
+        galleryNext.disabled = true;
+        galleryCounter.textContent = "NO COLLECTION";
+        return;
+      }
+
+      currentGallery = Math.max(0, Math.min(index, galleryFiles.length - 1));
+      const imagePath = galleryFolder + galleryFiles[currentGallery];
+
+      galleryImage.src = imagePath;
+      galleryImage.alt = "YAP Design jersey gallery, collection " + (currentGallery + 1);
+      galleryImageLink.href = imagePath;
+
+      galleryCounter.textContent =
+        "COLLECTION " + String(currentGallery + 1).padStart(2, "0") +
+        " / " + String(galleryFiles.length).padStart(2, "0");
+
+      galleryPrev.disabled = currentGallery === 0;
+      galleryNext.disabled = currentGallery === galleryFiles.length - 1;
+
+      galleryImage.onerror = function () {
+        galleryFrame.hidden = true;
+        galleryEmpty.hidden = false;
+      };
+      galleryImage.onload = function () {
+        galleryFrame.hidden = false;
+        galleryEmpty.hidden = true;
+      };
+    }
+
+    galleryPrev.addEventListener("click", function () {
+      showGallery(currentGallery - 1);
+    });
+
+    galleryNext.addEventListener("click", function () {
+      showGallery(currentGallery + 1);
+    });
+
+    // Allow visitors to swipe left/right on the gallery image on touch screens.
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    galleryImage.addEventListener("touchstart", function (event) {
+      if (!event.touches || event.touches.length !== 1) return;
+      touchStartX = event.touches[0].clientX;
+      touchStartY = event.touches[0].clientY;
+    }, { passive: true });
+
+    galleryImage.addEventListener("touchend", function (event) {
+      if (!event.changedTouches || event.changedTouches.length !== 1) return;
+
+      const deltaX = event.changedTouches[0].clientX - touchStartX;
+      const deltaY = event.changedTouches[0].clientY - touchStartY;
+
+      // Only treat a clear horizontal gesture as gallery navigation.
+      if (Math.abs(deltaX) > 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+        if (deltaX < 0) {
+          showGallery(currentGallery + 1);
+        } else {
+          showGallery(currentGallery - 1);
+        }
+      }
+    }, { passive: true });
+
+    showGallery(0);
+  </script>
+
 </body>
 </html>
