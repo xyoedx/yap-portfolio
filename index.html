@@ -62,6 +62,29 @@
       padding: 35px 7%;
       font-size: 12px;
       color: #888;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .visitor-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      color: #777;
+      text-transform: uppercase;
+    }
+    .visitor-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #25d366;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .visitor-badge strong {
+      color: #171717;
+      font-weight: 700;
     }
 
     /* Bulk jersey gallery */
@@ -327,7 +350,11 @@
   </section>
 
   <footer>
-    © 2026 YAP — YOUR AESTHETIC PLACE
+    <div>© 2026 YAP — YOUR AESTHETIC PLACE</div>
+    <div class="visitor-badge">
+      <span class="visitor-dot"></span>
+      <span>TOTAL VISITORS: <strong id="globalVisitorCount">...</strong></span>
+    </div>
   </footer>
 
   <!-- TOMBOL WHATSAPP MENGAMBANG (FLOATING) -->
@@ -490,6 +517,37 @@
     }, { passive: true });
 
     initAutoGallery();
+
+    /*
+      GLOBAL VISITOR COUNTER
+      Menggunakan namespace unik untuk YAP Portfolio tanpa perlu setting server/Cloudflare
+    */
+    (function initVisitorCounter() {
+      const counterEl = document.getElementById("globalVisitorCount");
+      const namespace = "xyoedx-yap-portfolio-2026";
+      const key = "visitors";
+      const sessionFlag = "yap_visited_session";
+
+      // Jika dalam 1 sesi browser sudah dihitung, ambil angkanya saja tanpa menambah (+1)
+      const isAlreadyCounted = sessionStorage.getItem(sessionFlag);
+      const endpoint = isAlreadyCounted
+        ? `https://api.counterapi.dev/v1/${namespace}/${key}/`
+        : `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
+
+      fetch(endpoint)
+        .then(res => res.json())
+        .then(data => {
+          if (data && typeof data.count === "number") {
+            counterEl.textContent = data.count.toLocaleString("en-US");
+            sessionStorage.setItem(sessionFlag, "true");
+          } else {
+            counterEl.textContent = "1";
+          }
+        })
+        .catch(() => {
+          counterEl.textContent = "-";
+        });
+    })();
   </script>
 
 </body>
