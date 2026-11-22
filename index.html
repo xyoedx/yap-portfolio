@@ -407,7 +407,8 @@
           break;
         }
       }
-// Balik urutan sehingga desain terbaru tampil paling depan
+
+      // Balik urutan sehingga desain terbaru tampil paling depan
       availableFiles.reverse();
       
       renderThumbnails();
@@ -521,29 +522,29 @@
     initAutoGallery();
 
     /*
-      GLOBAL VISITOR COUNTER
-      Menggunakan namespace unik untuk YAP Portfolio tanpa perlu setting server/Cloudflare
+      GLOBAL VISITOR COUNTER (VERSI STABIL + ANTI-REFRESH)
     */
     (function initVisitorCounter() {
       const counterEl = document.getElementById("globalVisitorCount");
-      const namespace = "xyoedx-yap-portfolio-2026";
+      const namespace = "xyoedx-yap-portfolio";
       const key = "visitors";
-      const sessionFlag = "yap_visited_session";
+      const sessionFlag = "yap_visited_session_v2";
 
-      // Jika dalam 1 sesi browser sudah dihitung, ambil angkanya saja tanpa menambah (+1)
+      // Jika dalam 1 sesi tab/browser sudah dihitung, gunakan endpoint /get agar tidak menambah +1 saat refresh
       const isAlreadyCounted = sessionStorage.getItem(sessionFlag);
-      const endpoint = isAlreadyCounted
-        ? `https://api.counterapi.dev/v1/${namespace}/${key}/`
-        : `https://api.counterapi.dev/v1/${namespace}/${key}/up`;
+      const action = isAlreadyCounted ? "get" : "hit";
 
-      fetch(endpoint)
-        .then(res => res.json())
+      fetch(`https://abacus.jasoncameron.dev/${action}/${namespace}/${key}`)
+        .then(res => {
+          if (!res.ok) throw new Error("Network error");
+          return res.json();
+        })
         .then(data => {
-          if (data && typeof data.count === "number") {
-            counterEl.textContent = data.count.toLocaleString("en-US");
+          if (data && typeof data.value === "number") {
+            counterEl.textContent = data.value.toLocaleString("en-US");
             sessionStorage.setItem(sessionFlag, "true");
           } else {
-            counterEl.textContent = "1";
+            counterEl.textContent = "-";
           }
         })
         .catch(() => {
