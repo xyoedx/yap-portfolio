@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#ffffff">
   <title>YAP — Your Aesthetic Place</title>
   
-  <!-- Font Awesome untuk ikon WhatsApp -->
+  <!-- Font Awesome untuk ikon WhatsApp & Instagram -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
@@ -59,7 +59,7 @@
       background: #f7f7f7;
     }
     footer {
-      padding: 35px 7%;
+      padding: 35px 7% 85px; /* Tambahan padding bawah agar tidak tertutup floating button di mobile */
       font-size: 12px;
       color: #888;
       display: flex;
@@ -230,18 +230,64 @@
       line-height: 1.8;
     }
 
+    /* Support & Social Buttons */
+    #support h2 {
+      font-size: clamp(28px, 4vw, 40px);
+      letter-spacing: -1px;
+      margin: 14px 0 10px;
+    }
+    #support p {
+      color: #777;
+      margin: 0 0 24px;
+      line-height: 1.6;
+    }
+    .support-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn-social {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1px solid #171717;
+    }
+    .btn-instagram {
+      background: #171717;
+      color: #fff;
+    }
+    .btn-instagram:hover {
+      background: #333;
+      border-color: #333;
+    }
+    .btn-kofi-inline {
+      background: #fff;
+      color: #171717;
+    }
+    .btn-kofi-inline:hover {
+      background: #ff38b8;
+      border-color: #ff38b8;
+      color: #fff;
+    }
+
     /* Style untuk Tombol WhatsApp Mengambang */
     .whatsapp-float {
       position: fixed;
-      bottom: 25px;
-      right: 25px;
+      bottom: 20px;
+      right: 20px;
       background-color: #25d366;
       color: white;
-      width: 60px;
-      height: 60px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       text-align: center;
-      font-size: 32px;
+      font-size: 30px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.25);
       z-index: 1000;
       display: flex;
@@ -267,12 +313,14 @@
       .gallery-nav { width: 100%; }
       .gallery-nav button { flex: 1; padding: 14px 10px; }
       .gallery-counter { text-align: center; order: -1; }
+      .support-actions { flex-direction: column; }
+      .btn-social { justify-content: center; }
       .whatsapp-float {
-        width: 50px;
-        height: 50px;
-        font-size: 26px;
-        bottom: 20px;
-        right: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+        bottom: 18px;
+        right: 18px;
       }
     }
   </style>
@@ -293,7 +341,6 @@
     <p class="intro">
       A creative space for sportswear and visual design.
       Discover unique jersey designs, explore creative ideas,
-      
     </p>
     <a href="#collection" class="button">EXPLORE COLLECTION →</a>
   </main>
@@ -346,7 +393,17 @@
   <section id="support">
     <div class="tag">SUPPORT INDEPENDENT CREATIVITY</div>
     <h2>Enjoy my work?</h2>
-    <p>Just contact me.</p>
+    <p>Follow my latest updates on Instagram or support my creative work with a coffee.</p>
+    <div class="support-actions">
+      <a href="https://www.instagram.com/your.aesthetic.place/" target="_blank" rel="noopener" class="btn-social btn-instagram">
+        <i class="fa-brands fa-instagram" style="font-size: 16px;"></i>
+        <span>INSTAGRAM</span>
+      </a>
+      <a href="https://ko-fi.com/yapdesign" target="_blank" rel="noopener" class="btn-social btn-kofi-inline">
+        <i class="fa-solid fa-mug-hot" style="font-size: 15px;"></i>
+        <span>BUY ME A COFFEE</span>
+      </a>
+    </div>
   </section>
 
   <footer>
@@ -357,10 +414,21 @@
     </div>
   </footer>
 
-  <!-- TOMBOL WHATSAPP MENGAMBANG (FLOATING) -->
+  <!-- TOMBOL WHATSAPP MENGAMBANG (FLOATING KANAN BAWAH) -->
   <a href="https://wa.me/628121565568?text=Halo,%20saya%20tertarik%20dengan%20koleksi%20di%20YAP" class="whatsapp-float" target="_blank" aria-label="Chat WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
   </a>
+
+  <!-- WIDGET KO-FI FLOATING ("BUY ME A COFFEE" KIRI BAWAH) -->
+  <script src='https://storage.ko-fi.com/cdn/scripts/overlay-widget.js'></script>
+  <script>
+    kofiWidgetOverlay.draw('yapdesign', {
+      'type': 'floating-chat',
+      'floating-chat.donateButton.text': 'Buy me a coffee',
+      'floating-chat.donateButton.background-color': '#ff38b8',
+      'floating-chat.donateButton.text-color': '#fff'
+    });
+  </script>
 
   <script>
     /*
