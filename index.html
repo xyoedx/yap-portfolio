@@ -24,7 +24,22 @@
       align-items: center;
       border-bottom: 1px solid #eee;
     }
-    .logo { font-size: 28px; font-weight: 900; }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+      text-decoration: none;
+      color: #171717;
+    }
+    .logo-mark {
+      height: 28px;
+      width: auto;
+      display: block;
+      flex-shrink: 0;
+    }
     nav a {
       color: #333;
       text-decoration: none;
@@ -303,6 +318,8 @@
 
     @media (max-width: 600px) {
       header { padding: 20px 5%; }
+      .logo { font-size: 24px; gap: 8px; }
+      .logo-mark { height: 24px; }
       nav a { margin-left: 12px; font-size: 10px; }
       main { padding: 75px 6% 55px; }
       h1 { letter-spacing: -3px; }
@@ -327,7 +344,14 @@
 </head>
 <body>
   <header>
-    <div class="logo">YAP.</div>
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 280 280" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M0 0L140 76L280 0V100L254 114V44L154 98V236L202 210V172L170 189V162L228 131V225L140 273L52 225V131L110 162V189L78 172V210L126 236V98L26 44V114L0 100V0Z" fill="#D51304"/>
+        <path d="M52 84L110 115V142L52 111V84Z" fill="#D51304"/>
+        <path d="M228 84L170 115V142L228 111V84Z" fill="#D51304"/>
+      </svg>
+      <span>YAP.</span>
+    </div>
     <nav>
       <a href="#about">ABOUT</a>
       <a href="#collection">COLLECTION</a>
